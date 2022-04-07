@@ -1,18 +1,12 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
-    Alert,
     SafeAreaView,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
-    Image,
-    ImageBackground,
-    TextInput, Pressable, ScrollView,
+    TextInput, Pressable, ScrollView, ActivityIndicator, FlatList,
 } from "react-native";
-import {LinearGradient} from "expo-linear-gradient";
-// import LinearGradient from "react-native-linear-gradient";
-// import {Table, TableWrapper, Row, Rows, Col} from 'react-native-table-component';
+
 
 export default function Purchases (){
     const [OrganizationValue, organization] = React.useState("");
@@ -20,74 +14,46 @@ export default function Purchases (){
     const [StorageValue, storage] = React.useState("");
     const [IntervalValue, interval] = React.useState("");
 
-    // const object =
-    //    [
-    //        {
-    //            "number" : 1,
-    //            "date" : "24.02.2022",
-    //            "document": "test",
-    //            "sum": 8100,
-    //            "contrAgent" : "ШИНТОРГ ТД ООО",
-    //            "organization" : "Прайм-Авто ООО",
-    //            "stock": "Транзит ООО"
-    //        },
-    //        {
-    //            "number" : 2,
-    //            "date" : "25.02.2022",
-    //            "document": "test",
-    //            "sum": 8100,
-    //            "contrAgent" : "ШИНТОРГ ТД ООО",
-    //            "organization" : "Прайм-Авто ООО",
-    //            "stock": "Транзит ООО"
-    //        },
-    //    ]
-    const object =
-        [
-            {
-                "number" : 1,
-                "date" : "24.02.2022",
-                "document": "test",
-                "sum": 8100,
-                "contrAgent" : "ШИНТОРГ ТД ООО",
-                "organization" : "Прайм-Авто ООО",
-                "stock": "Транзит ООО"
-            },
-            {
-                "number" : 2,
-                "date" : "25.02.2022",
-                "document": "test",
-                "sum": 8100,
-                "contrAgent" : "ШИНТОРГ ТД ООО",
-                "organization" : "Прайм-Авто ООО",
-                "stock": "Транзит ООО"
-            },
-        ]
-    const CONTENT = {
-        tableTitle:['number','date','document', 'sum', 'contrAgent', 'organization', 'stock'],
-        tableData:[
-            [1,'24.02.2022','test',8100,'ШИНТОРГ ТД ООО','Прайм-Авто ООО','Транзит ООО'],
-            [2,'25.02.2022','test1',8500,'ШИНТОРГ ТД ООО','Прайм-Авто ООО','Транзит ООО'],
-            [3,'26.02.2022','test2',8100,'ШИНТОРГ ТД ООО','Прайм-Авто ООО','Транзит ООО'],
-        ]
-    }
-    // let res = object.map(function (item){
-    //     return <tr key={item.number}>
-    //         <td>{item.number}</td>
-    //         <td>{item.date}</td>
-    //         <td>{item.document}</td>
-    //         <td>{item.sum}</td>
-    //         <td>{item.contrAgent}</td>
-    //         <td>{item.organization}</td>
-    //         <td>{item.stock}</td>
-    //     </tr>
-    //
-    // })
+    const [isLoading, setLoading] = useState(true)
+    const [data, setData] = useState([]);
 
-    function getPurchase() : void{
-        const obj = {
-
+    const getPurchases = async ()=>{
+        try {
+            const response = await fetch('http://localhost:3000/purchases');
+            const json = await response.json();
+            setData(json);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
         }
     }
+
+    useEffect(()=>{
+        getPurchases();
+    }, [])
+
+
+
+    function sendPurchase() : void{
+        fetch('http://localhost:3000/purchases', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                organization: OrganizationValue,
+                supplier: SupplierValue,
+                stock: StorageValue,
+                interval: IntervalValue,
+            })
+        });
+
+    }
+
+
+
     return(
             <SafeAreaView style={styles.container}>
                 <ScrollView>
@@ -124,27 +90,23 @@ export default function Purchases (){
                             style={styles.form}
                         />
 
-                        <Pressable style={styles.button}>
+                        <Pressable style={styles.button} onPress={sendPurchase}>
                             <Text>Добавить</Text>
                         </Pressable>
                     </View>
-                    {/*<View>*/}
-                    {/*    <Table borderStyle={{ borderWidth: 1 }}>*/}
-                    {/*        <Row data={CONTENT.tableTitle}*/}
-                    {/*             flexArr={[1,2,2,2,2,2,2]}*/}
-                    {/*             style={styles.head}*/}
-                    {/*             textStyle={styles.textTable}*/}
-                    {/*        />*/}
-                    {/*        <TableWrapper style={styles.wrapper}>*/}
-                    {/*            <Rows data={CONTENT.tableData}*/}
-                    {/*                  flexArr={[1,2,2,2,2,2,2]}*/}
-                    {/*                  style={styles.row}*/}
-                    {/*                  textStyle={styles.textTable}*/}
-                    {/*            />*/}
-
-                    {/*        </TableWrapper>*/}
-                    {/*    </Table>*/}
-                    {/*</View>*/}
+                {/*temp get request UI*/}
+                    <View style={styles.tableView}>
+                        <Text>organization, supplier, stock, interval</Text>
+                        {isLoading ? <ActivityIndicator/> : (
+                            <FlatList
+                                data={data}
+                                keyExtractor={({ id }, index) => id}
+                                renderItem={({ item } : any) => (
+                                    <Text>{item.organization}, {item.supplier}, {item.stock}, {item.interval}</Text>
+                                )}
+                            />
+                        )}
+                    </View>
                 </ScrollView>
             </SafeAreaView>
     );
@@ -196,5 +158,7 @@ const styles = StyleSheet.create({
     row: { height: 28 },
     textTable: { textAlign: 'center' },
     wrapper: { flexDirection: 'row' },
+    tableView:{
 
+    }
 });

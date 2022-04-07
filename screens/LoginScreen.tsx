@@ -12,9 +12,16 @@ import React from "react";
 
 
 export default function Login({navigation}: any) {
-    const [loginValue, login] = React.useState("Login");
-    const [passwordValue, password] = React.useState("Password");
-    const sendAlarm = ()=> Alert.alert(loginValue, passwordValue);
+    const [loginValue, login] = React.useState("");
+    const [passwordValue, password] = React.useState("");
+
+    const loginSendForm =()=>{
+        const sendform = {
+            "login" :loginValue,
+            "password": passwordValue,
+        }
+        console.log(sendform);
+    }
 
     return (
         <View style={styles.container}>
@@ -29,14 +36,16 @@ export default function Login({navigation}: any) {
                 <TextInput
                     style={styles.input}
                     onChangeText={login}
-                    value={loginValue}
+                    placeholder={'Login'}
+                    placeholderTextColor={'#808080'}
                 />
                 <TextInput
                     style={styles.input}
                     onChangeText={password}
-                    value={passwordValue}
+                    placeholder={'Password'}
+                    placeholderTextColor={'#808080'}
                 />
-                <Pressable style={styles.button} onPress={()=> navigation.navigate('WelcomeScreen')}>
+                <Pressable style={styles.button} onPress={loginSendForm}>
                     <Text style={styles.text}>Авторизоваться</Text>
                 </Pressable>
             </View>

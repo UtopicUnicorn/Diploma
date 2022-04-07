@@ -1,13 +1,31 @@
 import React from "react";
 import {SafeAreaView, View, Text, StyleSheet, TextInput, Pressable, ScrollView} from "react-native";
 import {LinearGradient} from "expo-linear-gradient";
+import {PriceRuleClass} from "../Classes/PriceRuleClass";
 
 export default function AddPriceRules ({navigation} : any){
-    const [NameValue, name] = React.useState("Название");
-    const [PercentValue,percent ] = React.useState("Процент");
-    const [MinValue, min] = React.useState("Не меньше");
-    const [MaxValue, max] = React.useState("Не болше");
+    const [NameValue, name] = React.useState("");
+    const [PercentValue,percent ] = React.useState("");
+    const [MinValue, min] = React.useState("");
+    const [MaxValue, max] = React.useState("");
 
+    // pricerule: PriceRuleClass;
+
+    const sendForm =()=> {
+        fetch('http://localhost:3000/price-rules', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: NameValue,
+                percent: PercentValue,
+                min: MinValue,
+                max: MaxValue,
+            })
+        });
+    }
 
     return(
         <SafeAreaView style={styles.container}>
@@ -47,7 +65,7 @@ export default function AddPriceRules ({navigation} : any){
                     locations={[0.2498,0.7503]}
                     colors={['#804EA7','#4FB0C0']}
                     style={styles.gradient}>
-                    <Pressable style={styles.saveButton} onPress={()=>navigation.navigate('PriceRulesScreen')}>
+                    <Pressable style={styles.saveButton} onPress={sendForm}>
                         <Text style={styles.text}>Сохранить</Text>
                     </Pressable>
                 </LinearGradient>

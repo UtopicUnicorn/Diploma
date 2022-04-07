@@ -11,6 +11,9 @@ import Purchases from "./screens/PurchasesScreen";
 import {createStackNavigator} from "@react-navigation/stack";
 import AddPartnersScreen from "./screens/AddPartnersScreen";
 import AddPriceRules from "./screens/AddPriceRules";
+import Deals from "./screens/Deals";
+import Nomenclature from "./screens/NomenclatureScreen";
+import AddNomenclature from "./screens/AddNomenclatureScreen";
 
 
 function Root() {
@@ -21,6 +24,9 @@ function Root() {
                 <Drawer.Screen name="PartnersScreen" component={PartnersScreen} />
                 <Drawer.Screen name="PriceRulesScreen" component={PriceRules} />
                 <Drawer.Screen name="Purchases" component={Purchases} />
+                <Drawer.Screen name="Deals" component={Deals}/>
+                <Drawer.Screen name="Nomenclature" component={Nomenclature}/>
+                <Drawer.Screen name="Create Nomenclature" component={AddNomenclature}/>
             </Drawer.Navigator>
     )
 }

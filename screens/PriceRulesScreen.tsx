@@ -1,9 +1,38 @@
-import React from "react";
-import {Pressable, SafeAreaView, StyleSheet, Text, View, Image, ImageBackground} from "react-native";
+import React, {useEffect, useState} from "react";
+import {
+    Pressable,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    ImageBackground,
+    ActivityIndicator,
+    FlatList
+} from "react-native";
 //import {LinearGradient} from "expo-linear-gradient";
 import {AntDesign} from "@expo/vector-icons";
 
 export default function PriceRules ({navigation}:any){
+
+    const [isLoading, setLoading] = useState(true)
+    const [data, setData] = useState([]);
+
+    const getRules = async ()=>{
+        try {
+         const response = await fetch('http://localhost:3000/price-rules');
+         const json = await response.json();
+         setData(json);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(()=>{
+        getRules();
+    }, [])
     return(
         <SafeAreaView style={styles.container}>
             <View style={styles.titleView}>
@@ -22,7 +51,19 @@ export default function PriceRules ({navigation}:any){
                         <Text style={styles.text}>Добавить</Text>
                     </Pressable>
                 </ImageBackground>
-
+            </View>
+        {/*table*/}
+            <View style={styles.tableView}>
+                <Text>name, percent, min, max</Text>
+                {isLoading ? <ActivityIndicator/> : (
+                    <FlatList
+                        data={data}
+                        keyExtractor={({ id }, index) => id}
+                        renderItem={({ item } : any) => (
+                            <Text>{item.name}, {item.percent}%, {item.min}, {item.max}</Text>
+                        )}
+                    />
+                )}
             </View>
         </SafeAreaView>
     )
@@ -69,5 +110,9 @@ const styles = StyleSheet.create({
         alignItems:'center',
         width:90,
         height:30,
+    },
+    tableView:{
+        marginTop: 30,
+        marginLeft: 20,
     }
 })

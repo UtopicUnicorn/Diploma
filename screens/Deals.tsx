@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
     Alert,
     SafeAreaView,
@@ -8,7 +8,7 @@ import {
     View,
     Image,
     ImageBackground,
-    TextInput, Pressable, ScrollView,
+    TextInput, Pressable, ScrollView, ActivityIndicator, FlatList,
 } from "react-native";
 
 export default function Deals(){
@@ -16,8 +16,48 @@ export default function Deals(){
     const [ManagerValue, manager] = React.useState("");
     const [IntervalValue, interval] = React.useState("");
 
+    const [isLoading, setLoading] = useState(true)
+    const [data, setData] = useState([]);
+
+
+    let state ={
+        activeBtnId : 'button1',
+    }
+
+    const getDeals = async ()=>{
+        try {
+            const response = await fetch('http://localhost:3000/deals');
+            const json = await response.json();
+            setData(json);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(()=>{
+        getDeals();
+    }, [])
+
+
+    const sendForm =()=> {
+        fetch('http://localhost:3000/deals', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                organization: OrganizationValue,
+                manager: ManagerValue,
+                interval: IntervalValue,
+            })
+        });
+    }
+
     return(
-        <SafeAreaView>
+        <SafeAreaView style={{flex:1, backgroundColor:'#FFF'}}>
             <ScrollView>
                 <View style={styles.center}>
                     <Text style={styles.title}>Сделки с клиентами</Text>
@@ -27,21 +67,21 @@ export default function Deals(){
                     <Text style={styles.text}>Организация</Text>
                     <TextInput
                         onChangeText={organization}
-                        value={OrganizationValue}
                         style={styles.form}
                     />
                     <Text style={styles.text}>Менеджер</Text>
                     <TextInput
                         onChangeText={manager}
-                        value={ManagerValue}
                         style={styles.form}
                     />
                     <Text style={styles.text}>Интервал</Text>
                     <TextInput
                         onChangeText={interval}
-                        value={IntervalValue}
                         style={styles.form}
                     />
+                    <Pressable style={styles.button} onPress={sendForm}>
+                        <Text>Отправить</Text>
+                    </Pressable>
                 </View>
                 {/*Buttons*/}
 
@@ -52,6 +92,19 @@ export default function Deals(){
                     <Pressable style={styles.buyButtons}>
                         <Text>Комиссия</Text>
                     </Pressable>
+                </View>
+                {/*temp get request UI*/}
+                <View style={styles.tableView}>
+                    <Text>organization, manager, interval</Text>
+                    {isLoading ? <ActivityIndicator/> : (
+                        <FlatList
+                            data={data}
+                            keyExtractor={({ id }, index) => id}
+                            renderItem={({ item } : any) => (
+                                <Text>{item.organization}, {item.manager}, {item.interval}</Text>
+                            )}
+                        />
+                    )}
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -86,12 +139,15 @@ const styles = StyleSheet.create({
         letterSpacing: 0.25,
     },
     button:{
+        paddingVertical: 12,
+        paddingHorizontal: 32,
         borderRadius: 4,
+        borderColor:'#804EA7',
         elevation: 3,
         borderWidth: 1,
-        marginLeft:20,
-        marginRight:20,
-        marginTop:"2%",
+        margin:"3%",
+        marginTop:"15%",
+        alignSelf:"center",
     },
     buyButtonsView:{
         marginTop:20,
@@ -108,5 +164,8 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent: 'center',
         borderColor:'#804EA7',
+    },
+    tableView: {
+
     }
 })

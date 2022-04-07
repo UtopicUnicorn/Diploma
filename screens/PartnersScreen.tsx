@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {
     Alert,
     SafeAreaView,
@@ -12,6 +12,7 @@ import {
 } from "react-native";
 
 export default function PartnersScreen ({navigation}: any){
+
     return(
         <SafeAreaView style={styles.container}>
             <View style={styles.titleView}>
@@ -29,6 +30,10 @@ export default function PartnersScreen ({navigation}: any){
                         <Text style={styles.text}>Добавить</Text>
                     </Pressable>
                 </ImageBackground>
+            </View>
+            {/*Temp get request UI*/}
+            <View>
+
             </View>
         </SafeAreaView>
     )
