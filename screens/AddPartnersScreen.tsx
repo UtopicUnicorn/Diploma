@@ -2,13 +2,14 @@ import React from "react";
 import {SafeAreaView, StyleSheet, View, Text, ScrollView, Pressable, TextInput} from "react-native";
 
 export default function AddPartnersScreen({navigation}:any){
+
     const [SurnameValue, surname] = React.useState("Фамилия");
     const [NameValue, name] = React.useState("Имя");
-    const [PatronymicValue, patronymic] = React.useState("Отчество");
+    const [ParentNameValue, parentname] = React.useState("Отчество");
 
     const [PhoneValue, phone] = React.useState("");
     const [MailValue, mail] = React.useState("");
-    const [PriceValue, price] = React.useState("");
+    const [PriceRuleValue, priceRule] = React.useState("");
 
     const [AddressValue, address] = React.useState("");
     const [INNValue, inn] = React.useState("");
@@ -22,6 +23,37 @@ export default function AddPartnersScreen({navigation}:any){
     let ip = false;
     let legEnt = false;
 
+
+
+    let type = "ip";
+
+    const sendForm =()=> {
+        fetch('http://localhost:3000/partners', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: NameValue,
+                surname: SurnameValue,
+                parentname: ParentNameValue,
+                phone: PhoneValue,
+                mail: MailValue,
+                pricerule: PriceRuleValue,
+                address: AddressValue,
+                inn: INNValue,
+                bank: BankValue,
+                paynumber: PayNumberValue,
+                bik: BIKValue,
+                kpp: KPPValue,
+                type: type,
+            })
+        });
+    }
+
+
+
     return(
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -31,10 +63,10 @@ export default function AddPartnersScreen({navigation}:any){
                 </View>
                 {/*Add buttons*/}
                 <View style={styles.closeButtonsView}>
-                    <Pressable style={styles.closeButtons}>
+                    <Pressable style={styles.closeButtons} onPress={sendForm}>
                         <Text>Записать</Text>
                     </Pressable>
-                    <Pressable style={styles.closeButtons} onPress={()=> navigation.navigate('PartnersScreen')}>
+                    <Pressable style={styles.closeButtons} onPress={()=> navigation.navigate('Контрагенты')}>
                         <Text>Записать и закрыть</Text>
                     </Pressable>
                 </View>
@@ -64,7 +96,7 @@ export default function AddPartnersScreen({navigation}:any){
                     />
                     <TextInput
                         style={styles.formInput}
-                        onChangeText={patronymic}
+                        onChangeText={parentname}
                         placeholder={"Отчество"}
                     />
                 </View>
@@ -85,7 +117,7 @@ export default function AddPartnersScreen({navigation}:any){
                     <Text style={styles.text}>Ценовое правило</Text>
                     <TextInput
                         style={styles.formInput}
-                        onChangeText={price}
+                        onChangeText={priceRule}
                     />
                 </View >
                 {/*Form for IP and legal entity */}
@@ -160,6 +192,8 @@ const styles = StyleSheet.create(
             margin:10,
             justifyContent:"center",
             alignItems:"center",
+            borderColor: '#804EA7',
+
         },
         text:{
             marginTop:10,
@@ -173,6 +207,8 @@ const styles = StyleSheet.create(
             margin:10,
             borderWidth:1,
             height:40,
+            borderColor: '#804EA7',
+
         },
         formView:{
             marginTop:30,
@@ -186,6 +222,7 @@ const styles = StyleSheet.create(
             justifyContent: "center",
             borderWidth:1,
             padding:10,
+            borderColor: '#804EA7',
         },
         activeButton:{
             backgroundColor: '#566995',

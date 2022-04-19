@@ -11,6 +11,16 @@ import {
     TextInput, Pressable, ScrollView, ActivityIndicator, FlatList,
 } from "react-native";
 
+
+//displayed item
+const Item = ({item, onPress, backgroundColor, textColor } : any) => (
+    <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
+        <Text style={[styles.itemText, textColor]}>Организация {item.organization}</Text>
+        <Text style={[styles.itemText, textColor]}>Менеджер {item.manager}</Text>
+        <Text style={[styles.itemText, textColor]}>Интервал {item.interval}</Text>
+    </TouchableOpacity>
+);
+
 export default function Deals(){
     const [OrganizationValue, organization] = React.useState("");
     const [ManagerValue, manager] = React.useState("");
@@ -18,6 +28,7 @@ export default function Deals(){
 
     const [isLoading, setLoading] = useState(true)
     const [data, setData] = useState([]);
+    const [selectedId, setSelectedId] = useState(null);
 
 
     let state ={
@@ -40,6 +51,19 @@ export default function Deals(){
         getDeals();
     }, [])
 
+    //function to render item
+    const renderItem = ({item} : any)=> {
+        const backgroundColor = item.id === selectedId ? "#808080" : "#fff";
+        const color = item.id === selectedId ? 'white' : 'black';
+        return (
+            <Item
+                item={item}
+                onPress={() => setSelectedId(item.id)}
+                backgroundColor={{ backgroundColor }}
+                textColor={{ color }}
+            />
+        );
+    }
 
     const sendForm =()=> {
         fetch('http://localhost:3000/deals', {
@@ -58,7 +82,6 @@ export default function Deals(){
 
     return(
         <SafeAreaView style={{flex:1, backgroundColor:'#FFF'}}>
-            <ScrollView>
                 <View style={styles.center}>
                     <Text style={styles.title}>Сделки с клиентами</Text>
                 </View>
@@ -84,7 +107,6 @@ export default function Deals(){
                     </Pressable>
                 </View>
                 {/*Buttons*/}
-
                 <View style={styles.buyButtonsView}>
                     <Pressable style={styles.buyButtons}>
                         <Text>Выкуп</Text>
@@ -93,20 +115,13 @@ export default function Deals(){
                         <Text>Комиссия</Text>
                     </Pressable>
                 </View>
-                {/*temp get request UI*/}
-                <View style={styles.tableView}>
-                    <Text>organization, manager, interval</Text>
-                    {isLoading ? <ActivityIndicator/> : (
-                        <FlatList
-                            data={data}
-                            keyExtractor={({ id }, index) => id}
-                            renderItem={({ item } : any) => (
-                                <Text>{item.organization}, {item.manager}, {item.interval}</Text>
-                            )}
-                        />
-                    )}
-                </View>
-            </ScrollView>
+            {isLoading ? <ActivityIndicator/> : (
+                <FlatList
+                    data={data}
+                    renderItem={renderItem}
+                    keyExtractor={({ id }, index) => id}
+                    extraData={selectedId}
+                />)}
         </SafeAreaView>
     );
 }
@@ -167,5 +182,18 @@ const styles = StyleSheet.create({
     },
     tableView: {
 
+    },
+    item: {
+        // padding: 20,
+        marginTop: 20,
+        marginBottom: 20,
+        marginHorizontal: 20,
+    },
+    itemText:{
+        alignItems:'center',
+        color:'#fff',
+        borderWidth:1,
+        borderColor: '#804EA7',
+        padding: 10,
     }
 })

@@ -3,17 +3,17 @@ import {Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View} 
 
 
 
-
-
 export default function AddNomenclature ({navigation}: any){
-    const [BrandValue, brand] = React.useState("");
-    const [ModelValue, model] = React.useState("");
-    const [ProfileValue, profile] = React.useState("");
-    const [DiameterValue, diameter] = React.useState("");
-    const [WidthValue, width] = React.useState("");
-    const [IndexValue, index] = React.useState("")
-    const [DescriptionValue, description] = React.useState("");
-    const [YearValue, year] = React.useState("");
+    let [BrandValue, brand] = React.useState("");
+    let [ModelValue, model] = React.useState("");
+    let [ProfileValue, profile] = React.useState("");
+    let [DiameterValue, diameter] = React.useState("");
+    let [WidthValue, width] = React.useState("");
+    let [IndexValue, index] = React.useState("")
+    let [DescriptionValue, description] = React.useState("");
+    let [YearValue, year] = React.useState("");
+
+    const years: number[] =[2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022];
 
     const sendForm =()=> {
         fetch('http://localhost:3000/nomenclature', {

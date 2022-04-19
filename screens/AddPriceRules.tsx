@@ -1,7 +1,6 @@
 import React from "react";
-import {SafeAreaView, View, Text, StyleSheet, TextInput, Pressable, ScrollView} from "react-native";
+import {SafeAreaView, View, Text, StyleSheet, TextInput, Pressable, ScrollView, Alert} from "react-native";
 import {LinearGradient} from "expo-linear-gradient";
-import {PriceRuleClass} from "../Classes/PriceRuleClass";
 
 export default function AddPriceRules ({navigation} : any){
     const [NameValue, name] = React.useState("");
@@ -9,14 +8,22 @@ export default function AddPriceRules ({navigation} : any){
     const [MinValue, min] = React.useState("");
     const [MaxValue, max] = React.useState("");
 
-    // pricerule: PriceRuleClass;
 
     const sendForm =()=> {
+        const tempMin: number = +MinValue;
+        const tempMax: number = +MaxValue;
+        if(tempMin>tempMax){
+            Alert.alert('Неправильный ввод','Минимальная сумма указана больше чем максимальная');
+            return;
+        }
+
+
         fetch('http://localhost:3000/price-rules', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': "1675449977507b2eb0a5ec3618038664b7ceb2dc",
             },
             body: JSON.stringify({
                 name: NameValue,

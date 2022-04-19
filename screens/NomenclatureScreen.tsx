@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {
     Alert,
     SafeAreaView,
@@ -8,11 +8,76 @@ import {
     View,
     Image,
     ImageBackground,
-    TextInput, Pressable, ScrollView,
+    TextInput, Pressable, ScrollView, ActivityIndicator, FlatList,
 } from "react-native";
+import {EvilIcons, FontAwesome} from '@expo/vector-icons';
+
+
+//displayed item
+const Item = ({item, onPress, backgroundColor, textColor} : any) => (
+    <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
+        <Text style={[styles.itemText, textColor]}>Брэнд {item.brand}</Text>
+        <Text style={[styles.itemText, textColor]}>Модель {item.model}</Text>
+        <Text style={[styles.itemText, textColor]}>Ширина {item.width}</Text>
+        <Text style={[styles.itemText, textColor]}>Профиль {item.profile}</Text>
+        <Text style={[styles.itemText, textColor]}>Диаметр {item.diameter}</Text>
+        <Text style={[styles.itemText, textColor]}>Индекс {item.index}</Text>
+        <Text style={[styles.itemText, textColor]}>Год {item.year}</Text>
+        <Text style={[styles.itemText, textColor]}>Описание {item.description}</Text>
+        <TouchableOpacity style={styles.itemText} onPress={() =>deleteItem(item.id)}>
+            <FontAwesome name="trash-o" size={24} color="black" />
+        </TouchableOpacity>
+    </TouchableOpacity>
+);
+
+//delete selected item
+function deleteItem(id: string) : void{
+ console.log(id);
+    fetch('http://localhost:3000/nomenclature' + `/${id}`, { method: 'DELETE' })
+}
+
+
 
 export default function Nomenclature (){
     const [SearchValue, search] = React.useState("Поиск");
+    const [selectedId, setSelectedId] = useState(null);
+    const [isLoading, setLoading] = useState(true)
+    const [data, setData] = useState([]);
+
+    //get request
+    const getNomenclature = async ()=>{
+        try {
+            const response = await fetch('http://localhost:3000/nomenclature');
+            const json = await response.json();
+            setData(json);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    //function to render item
+    const renderItem = ({item} : any)=> {
+        const backgroundColor = item.id === selectedId ? "#808080" : "#fff";
+        const color = item.id === selectedId ? 'white' : 'black';
+        return (
+            <Item
+                item={item}
+                onPress={() => setSelectedId(item.id)}
+                onDelete={()=> setSelectedId(item.id)}
+                backgroundColor={{ backgroundColor }}
+                textColor={{ color }}
+            />
+        );
+    }
+
+
+
+    //firstOpen get request
+    useEffect(()=>{ setInterval(()=>  getNomenclature(),5000)}, [])
+
+
     return(
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -69,6 +134,13 @@ export default function Nomenclature (){
                         <Text style={styles.text}>Б/У</Text>
                     </Pressable>
                 </View>
+                {isLoading ? <ActivityIndicator/> : (
+                    <FlatList nestedScrollEnabled={true}
+                        data={data}
+                        renderItem={renderItem}
+                        keyExtractor={({ id }, index) => id}
+                        extraData={selectedId}
+                    />)}
             </ScrollView>
             {/*Child Components with the rest layout*/}
         </SafeAreaView>
@@ -111,6 +183,26 @@ const styles = StyleSheet.create({
     },
     oldnew:{
         marginTop:'5%',
+    },
+    item: {
+        // padding: 20,
+        marginTop: 20,
+        marginBottom: 20,
+        marginHorizontal: 20,
+    },
+    itemText:{
+        alignItems:'center',
+        color:'#fff',
+        borderWidth:1,
+        borderColor: '#804EA7',
+        padding: 10,
+    },
+    itemOps:{
+        alignItems:'center',
+        color:'#fff',
+        borderWidth:1,
+        borderColor: '#f00',
+        padding: 10,
     }
 
 });
