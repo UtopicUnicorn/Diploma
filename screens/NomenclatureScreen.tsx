@@ -8,9 +8,10 @@ import {
     View,
     Image,
     ImageBackground,
-    TextInput, Pressable, ScrollView, ActivityIndicator, FlatList,
+    TextInput, Pressable, ScrollView, ActivityIndicator, FlatList, LogBox,
 } from "react-native";
 import {EvilIcons, FontAwesome} from '@expo/vector-icons';
+import NomenclatureRepository from "../Repositories/NomenclatureRepository";
 
 
 //displayed item
@@ -23,6 +24,9 @@ const Item = ({item, onPress, backgroundColor, textColor} : any) => (
         <Text style={[styles.itemText, textColor]}>Диаметр {item.diameter}</Text>
         <Text style={[styles.itemText, textColor]}>Индекс {item.index}</Text>
         <Text style={[styles.itemText, textColor]}>Год {item.year}</Text>
+        <Text style={[styles.itemText, textColor]}>Тип {item.type}</Text>
+        <Text style={[styles.itemText, textColor]}>Сезон {item.season}</Text>
+        <Text style={[styles.itemText, textColor]}>Состояние {item.status}</Text>
         <Text style={[styles.itemText, textColor]}>Описание {item.description}</Text>
         <TouchableOpacity style={styles.itemText} onPress={() =>deleteItem(item.id)}>
             <FontAwesome name="trash-o" size={24} color="black" />
@@ -32,11 +36,8 @@ const Item = ({item, onPress, backgroundColor, textColor} : any) => (
 
 //delete selected item
 function deleteItem(id: string) : void{
- console.log(id);
-    fetch('http://localhost:3000/nomenclature' + `/${id}`, { method: 'DELETE' })
+    NomenclatureRepository.delete(id).then(r=>console.log('ok'));
 }
-
-
 
 export default function Nomenclature (){
     const [SearchValue, search] = React.useState("Поиск");
@@ -46,15 +47,9 @@ export default function Nomenclature (){
 
     //get request
     const getNomenclature = async ()=>{
-        try {
-            const response = await fetch('http://localhost:3000/nomenclature');
-            const json = await response.json();
-            setData(json);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
+        await NomenclatureRepository.get().then(resp=>{setData(resp.data)}).
+            catch(e=>{console.log(e)}).finally(()=>setLoading(false));
+
     }
 
     //function to render item
@@ -75,7 +70,7 @@ export default function Nomenclature (){
 
 
     //firstOpen get request
-    useEffect(()=>{ setInterval(()=>  getNomenclature(),5000)}, [])
+    useEffect(()=>{ setInterval(()=>  getNomenclature(),5000); LogBox.ignoreLogs(['VirtualizedLists should never be nested'])}, [])
 
 
     return(

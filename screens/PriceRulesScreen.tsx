@@ -11,31 +11,46 @@ import {
     FlatList, TouchableOpacity, ScrollView
 } from "react-native";
 import { FontAwesome } from '@expo/vector-icons';
-
+import PriceRepository from "../Repositories/PriceRepository";
 import {PriceRulesInterface} from "../model/priceRulesInterface";
-
-//import {LinearGradient} from "expo-linear-gradient";
-import {AntDesign} from "@expo/vector-icons";
+import {priceRulesConstants} from "../components/constants";
+import {navigationEnums} from "../components/navigationEnums";
 
 
 //displayed item
-const Item = ({item, onPress, backgroundColor, textColor } : any) => (
-    <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
-        <Text style={[styles.itemText, textColor]}>{item.name}</Text>
-        <Text style={[styles.itemText, textColor]}>Процент {item.percent}%</Text>
-        <Text style={[styles.itemText, textColor]}>Не меньше {item.min}</Text>
-        <Text style={[styles.itemText, textColor]}>Не больше {item.max}</Text>
-        <TouchableOpacity style={styles.itemText} onPress={() =>deleteItem(item.id)}>
+const Item = ({item, navigation} : any) => (
+    <View style={[styles.item]}>
+        <View style={styles.itemView}>
+        <Text style={[styles.itemText]}>{item.name}</Text>
+        </View>
+        <View style={styles.itemView}>
+            <Text style={[styles.itemText]}>{priceRulesConstants.procent}</Text>
+            <Text style={[styles.itemText]}>{item.percent}%</Text>
+        </View>
+        <View style={styles.itemView}>
+            <Text style={[styles.itemText]}>{priceRulesConstants.min}</Text>
+            <Text style={[styles.itemText]}>{item.min}</Text>
+        </View>
+        <View style={styles.itemView}>
+            <Text style={[styles.itemText]}>{priceRulesConstants.max}</Text>
+            <Text style={[styles.itemText]}>{item.max}</Text>
+        </View>
+        <View style={styles.itemButtonsView}>
+        <TouchableOpacity style={styles.chooseButtons} onPress={()=>deleteItem(item.id)}>
             <FontAwesome name="trash-o" size={24} color="black" />
         </TouchableOpacity>
-    </TouchableOpacity>
+        <TouchableOpacity style={styles.chooseButtons} onPress={()=>navigation.navigate(navigationEnums.addRule, {item})}>
+            <FontAwesome name="edit" size={24} color="black" />
+        </TouchableOpacity>
+        </View>
+    </View>
 );
 
-function deleteItem(id: string) : void{
+ function deleteItem(id: string) : void{
     console.log(id);
-
-    fetch('http://localhost:3000/price-rules' + `/${id}`, { method: 'DELETE' })
+    PriceRepository.delete(id).then(r =>console.log('ok'));
 }
+
 
 //main function screen
 export default function PriceRules ({navigation}:any){
@@ -43,29 +58,21 @@ export default function PriceRules ({navigation}:any){
     const [data, setData] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
 
+
     //get request
     const getRules = async ()=>{
-        try {
-         const response = await fetch('http://localhost:3000/price-rules');
-         const json = await response.json();
-         setData(json);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
+        await PriceRepository.get().then(resp=>{setData(resp.data)}).
+            catch(error=>{console.log(error)}).
+                finally(()=>setLoading(false))
+
     }
 
     //function to render item
     const renderItem = ({item} : any)=> {
-        const backgroundColor = item.id === selectedId ? "#808080" : "#fff";
-        const color = item.id === selectedId ? 'white' : 'black';
         return (
             <Item
                 item={item}
-                onPress={() => setSelectedId(item.id)}
-                backgroundColor={{ backgroundColor }}
-                textColor={{ color }}
+                navigation={navigation}
             />
         );
     }
@@ -79,9 +86,6 @@ export default function PriceRules ({navigation}:any){
 
     return(
         <SafeAreaView style={styles.container}>
-            <View style={styles.titleView}>
-                <Text style={styles.title}>Ценовые правила</Text>
-            </View>
             <View style={styles.buttonsView}>
                 <ImageBackground
                     resizeMode={"cover"}
@@ -90,13 +94,11 @@ export default function PriceRules ({navigation}:any){
                         require('../assets/button-bg.png')
                     }
                 >
-                    <Pressable style={styles.button} onPress={()=> navigation.navigate('Добавить ценовое правило')}>
-                        {/*<AntDesign name={'pluscircleo'} size={24} color={'black'}/>*/}
-                        <Text style={styles.text}>Добавить</Text>
-                    </Pressable>
+                    <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate(navigationEnums.addRule)}>
+                        <Text style={styles.text}>{priceRulesConstants.add}</Text>
+                    </TouchableOpacity>
                 </ImageBackground>
             </View>
-        {/*table*/}
                 {isLoading ? <ActivityIndicator/> : (
                 <FlatList nestedScrollEnabled={true}
                     data={data}
@@ -116,12 +118,12 @@ const styles = StyleSheet.create({
     button:{
         flexDirection:'row',
         elevation: 2,
-        // borderWidth: 1,
+        borderWidth: 1,
         height:30,
-        width: 80,
+        width: 150,
         alignItems:'center',
         justifyContent: 'center',
-        // borderColor:'#804EA7',
+        borderColor:'#804EA7',
     },
     title:{
         fontSize: 20,
@@ -135,8 +137,8 @@ const styles = StyleSheet.create({
     },
     buttonsView:{
         marginTop:20,
-        alignItems:'flex-start',
-        marginLeft:20,
+        alignItems:'center',
+        // marginLeft:20,
         marginBottom:20,
     },
     titleView:{
@@ -148,7 +150,7 @@ const styles = StyleSheet.create({
         display:"flex",
         justifyContent:'center',
         alignItems:'center',
-        width:90,
+        width:150,
         height:30,
     },
     tableView:{
@@ -163,9 +165,10 @@ const styles = StyleSheet.create({
     },
     itemText:{
         alignItems:'center',
-        color:'#fff',
-        borderWidth:1,
-        borderColor: '#804EA7',
+        // justifyContent:'space-between',
+        color:'#000',
+        // borderWidth:1,
+        // borderColor: '#804EA7',
         padding: 10,
     },
     itemOps:{
@@ -174,5 +177,26 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderColor: '#f00',
         padding: 10,
+    },
+    chooseButtons:{
+        // flexDirection:'row',
+        // elevation: 2,
+        borderWidth: 1,
+        height:30,
+        width: 167,
+        alignItems:'center',
+        justifyContent: 'center',
+        borderColor:'#804EA7',
+    },
+    itemView:{
+        borderWidth:1,
+        borderColor:'#804EA7',
+        flexDirection:'row',
+        justifyContent:'space-between'
+    },
+    itemButtonsView:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center'
     }
 })

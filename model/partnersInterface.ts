@@ -4,21 +4,27 @@ export interface PartnersInterface {
     parentname: string;
     phone: string;
     mail: string;
-    price: number;
     type: string;
+    address?: string;
+    inn?:string;
+    bank?: string;
+    paynumber?: string;
+    bik?: string;
+    pricerule?: string;
+    kpp?: string;
 }
 
 
-export interface ipPartner extends PartnersInterface{
-    address: string;
-    inn:string;
-    bank: string;
-    pay_number: string;
-    bik: string;
-    price_rule: string;
-
-}
-
-export  interface  lawPartner extends   ipPartner{
-    kpp: string;
-}
+// export interface ipPartner extends PartnersInterface{
+//     address: string;
+//     inn:string;
+//     bank: string;
+//     paynumber: string;
+//     bik: string;
+//     pricerule: string;
+//
+// }
+//
+// export  interface  lawPartner extends ipPartner{
+//     kpp: string;
+// }

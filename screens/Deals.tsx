@@ -8,8 +8,11 @@ import {
     View,
     Image,
     ImageBackground,
-    TextInput, Pressable, ScrollView, ActivityIndicator, FlatList,
+    TextInput, Pressable, ScrollView, ActivityIndicator, FlatList, LogBox,
 } from "react-native";
+import DealsRepository from "../Repositories/DealsRepository";
+import PriceRepository from "../Repositories/PriceRepository";
+import {FontAwesome} from "@expo/vector-icons";
 
 
 //displayed item
@@ -18,8 +21,15 @@ const Item = ({item, onPress, backgroundColor, textColor } : any) => (
         <Text style={[styles.itemText, textColor]}>Организация {item.organization}</Text>
         <Text style={[styles.itemText, textColor]}>Менеджер {item.manager}</Text>
         <Text style={[styles.itemText, textColor]}>Интервал {item.interval}</Text>
+        <TouchableOpacity style={styles.itemText} onPress={() =>deleteItem(item.id)}>
+            <FontAwesome name="trash-o" size={24} color="black" />
+        </TouchableOpacity>
     </TouchableOpacity>
 );
+
+function deleteItem(id: string) : void{
+    DealsRepository.delete(id).then(r =>console.log('ok'));
+}
 
 export default function Deals(){
     const [OrganizationValue, organization] = React.useState("");
@@ -36,20 +46,12 @@ export default function Deals(){
     }
 
     const getDeals = async ()=>{
-        try {
-            const response = await fetch('http://localhost:3000/deals');
-            const json = await response.json();
-            setData(json);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
+         await DealsRepository.get().then(resp=>{setData(resp.data)}).
+            catch(error=>{console.log(error)}).
+                finally(()=>setLoading(false));
     }
 
-    useEffect(()=>{
-        getDeals();
-    }, [])
+    useEffect(()=>{setInterval(()=>getDeals(),5000); LogBox.ignoreLogs(['VirtualizedLists should never be nested'])}, [])
 
     //function to render item
     const renderItem = ({item} : any)=> {
@@ -65,26 +67,20 @@ export default function Deals(){
         );
     }
 
-    const sendForm =()=> {
-        fetch('http://localhost:3000/deals', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                organization: OrganizationValue,
-                manager: ManagerValue,
-                interval: IntervalValue,
-            })
-        });
+    const sendForm = ()=> {
+         let data = DealsRepository.post({
+                    organization: OrganizationValue,
+                    manager: ManagerValue,
+                    interval: IntervalValue,
+        })
     }
 
     return(
         <SafeAreaView style={{flex:1, backgroundColor:'#FFF'}}>
-                <View style={styles.center}>
-                    <Text style={styles.title}>Сделки с клиентами</Text>
-                </View>
+            <ScrollView>
+                {/*<View style={styles.center}>*/}
+                {/*    <Text style={styles.title}>Сделки с клиентами</Text>*/}
+                {/*</View>*/}
                 {/*Input Data*/}
                 <View>
                     <Text style={styles.text}>Организация</Text>
@@ -122,6 +118,7 @@ export default function Deals(){
                     keyExtractor={({ id }, index) => id}
                     extraData={selectedId}
                 />)}
+            </ScrollView>
         </SafeAreaView>
     );
 }

@@ -1,6 +1,6 @@
-export interface Purchases {
+export interface PurchasesInterface {
     organization: string;
     supplier: string;
-    storage: string;
+    stock: string;
     interval: string;
 }

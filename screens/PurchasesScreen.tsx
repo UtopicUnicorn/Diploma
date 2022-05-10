@@ -4,27 +4,44 @@ import {
     StyleSheet,
     Text,
     View,
-    TextInput, Pressable, ScrollView, ActivityIndicator, FlatList, TouchableOpacity,
+    TextInput, Pressable, ScrollView, ActivityIndicator, FlatList, TouchableOpacity, LogBox,
 } from "react-native";
 import {FontAwesome} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
+import {purchasesEnum} from "../components/constants";
+import PurchasesRepository from "../Repositories/PurchasesRepository";
+import PartnersRepository from "../Repositories/PartnersRepository";
 
 //displayed item
-const Item = ({item, onPress, backgroundColor, textColor } : any) => (
-    <TouchableOpacity onPress={onPress} style={[styles.item, backgroundColor]}>
-        <Text style={[styles.itemText, textColor]}>Организация:  {item.organization}</Text>
-        <Text style={[styles.itemText, textColor]}>Поставщик:  {item.supplier}</Text>
-        <Text style={[styles.itemText, textColor]}>Склад:  {item.stock}</Text>
-        <Text style={[styles.itemText, textColor]}>Интервал:  {item.interval}</Text>
-        <TouchableOpacity style={styles.itemText} onPress={() =>deleteItem(item.id)}>
+const Item = ({item} : any) => (
+    <View style={styles.item}>
+        <View style={styles.itemView}>
+            <Text style={styles.itemText}>{purchasesEnum.organization}:</Text>
+            <Text style={styles.itemText}>{item.organization}</Text>
+        </View>
+
+        <View style={styles.itemView}>
+            <Text style={styles.itemText}>{purchasesEnum.supplier}:</Text>
+            <Text style={styles.itemText}>{item.supplier}</Text>
+        </View>
+
+        <View style={styles.itemView}>
+            <Text style={styles.itemText}>{purchasesEnum.stock}:</Text>
+            <Text style={styles.itemText}>{item.stock}</Text>
+        </View>
+
+        <View style={styles.itemView}>
+            <Text style={styles.itemText}>{purchasesEnum.interval}:</Text>
+            <Text style={styles.itemText}>{item.interval}</Text>
+        </View>
+        <TouchableOpacity style={styles.itemButton} onPress={() =>deleteItem(item.id)}>
             <FontAwesome name="trash-o" size={24} color="black" />
         </TouchableOpacity>
-    </TouchableOpacity>
+    </View>
 );
 
 function deleteItem(id: string) : void{
-    console.log(id);
-    fetch('http://localhost:3000/purchases' + `/${id}`, { method: 'DELETE' })
+    PurchasesRepository.delete(id).then(r=>console.log('ok'));
 }
 
 export default function Purchases (){
@@ -38,52 +55,34 @@ export default function Purchases (){
     const [selectedId, setSelectedId] = useState(null);
 
     const getPurchases = async ()=>{
-        try {
-            const response = await fetch('http://localhost:3000/purchases');
-            const json = await response.json();
-            setData(json);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false);
-        }
+        await PurchasesRepository.get().then(resp=>{setData(resp.data)}).
+            catch(e=>{console.log(e)}).finally(()=>setLoading(false));
     }
 
     useEffect(()=>{
-        setInterval(()=>getPurchases(), 5000);
-    }, [])
+        setInterval(()=>getPurchases(), 5000); LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+    } , [])
 
 
     //function to render item
     const renderItem = ({item} : any)=> {
-        const backgroundColor = item.id === selectedId ? "#808080" : "#fff";
-        const color = item.id === selectedId ? 'white' : 'black';
         return (
             <Item
                 item={item}
-                onPress={() => setSelectedId(item.id)}
-                backgroundColor={{ backgroundColor }}
-                textColor={{ color }}
+                // onPress={() => setSelectedId(item.id)}
             />
         );
     }
 
 
-    function sendPurchase() : void{
-        fetch('http://localhost:3000/purchases', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                organization: OrganizationValue,
-                supplier: SupplierValue,
-                stock: StorageValue,
-                interval: IntervalValue,
-            })
-        });
-
+    async function sendPurchase(){
+        const body = {
+           organization: OrganizationValue,
+           supplier: SupplierValue,
+           stock: StorageValue,
+           interval: IntervalValue,
+        }
+        let {data} = await PurchasesRepository.post(body);
     }
 
 
@@ -92,31 +91,31 @@ export default function Purchases (){
             <SafeAreaView style={styles.container}>
                 <ScrollView>
                 <View style={styles.center} >
-                        <Text style={styles.title}>Документы закупки</Text>
+                        <Text style={styles.title}>{purchasesEnum.title}</Text>
                     </View>
                     <View>
-                        <Text style={styles.text}>Организация</Text>
+                        <Text style={styles.text}>{purchasesEnum.organization}</Text>
                         <TextInput
                             onChangeText={organization}
                             value={OrganizationValue}
                             style={styles.form}
                         />
 
-                        <Text style={styles.text}>Поставщик</Text>
+                        <Text style={styles.text}>{purchasesEnum.supplier}</Text>
                         <TextInput
                             onChangeText={supplier}
                             value={SupplierValue}
                             style={styles.form}
                         />
 
-                        <Text style={styles.text}>Склад</Text>
+                        <Text style={styles.text}>{purchasesEnum.stock}</Text>
                         <TextInput
                             onChangeText={stock}
                             value={StorageValue}
                             style={styles.form}
                         />
 
-                        <Text style={styles.text}>Интервал</Text>
+                        <Text style={styles.text}>{purchasesEnum.interval}</Text>
                         <TextInput
                             onChangeText={interval}
                             value={IntervalValue}
@@ -129,7 +128,7 @@ export default function Purchases (){
                                 locations={[0.2498,0.7503]}
                                 colors={['#804EA7','#4FB0C0']}>
                             <Pressable style={styles.button} onPress={sendPurchase}>
-                              <Text style={styles.buttonText}>Добавить</Text>
+                              <Text style={styles.buttonText}>{purchasesEnum.add}</Text>
                             </Pressable>
                             </LinearGradient>
                         </View>
@@ -199,9 +198,9 @@ const styles = StyleSheet.create({
     },
     itemText:{
         alignItems:'center',
-        color:'#fff',
-        borderWidth:1,
-        borderColor: '#804EA7',
+        // color:'#000',
+        // borderWidth:1,
+        // borderColor: '#804EA7',
         padding: 10,
     },
     saveButtonView:{
@@ -212,5 +211,18 @@ const styles = StyleSheet.create({
     buttonText:{
         color:'#fff',
         fontSize:18,
-    }
+    },
+    itemView:{
+        borderWidth:1,
+        borderColor:'#804EA7',
+        flexDirection:'row',
+        justifyContent:'space-between'
+    },
+    itemButton:{
+        alignItems:'center',
+        // color:'#fff',
+        borderWidth:1,
+        borderColor: '#804EA7',
+        padding: 10,
+    },
 });

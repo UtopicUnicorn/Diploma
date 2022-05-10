@@ -49,15 +49,16 @@ export default function App() {
 
 
     return (
-        <AuthContext.Provider value={{isAuth, setIsAuth}}>
-         {/*<NavigationContainer>*/}
-         {/*    <Stack.Navigator screenOptions={{headerShown:false}}>*/}
-         {/*        <Stack.Screen name={"Root"} component={Root} options={{headerShown:false}} />*/}
-         {/*       <Stack.Screen name={"Добавить контрагентов"} component={AddPartnersScreen}/>*/}
-         {/*        <Stack.Screen name={"Добавить ценовое правило"} component={AddPriceRules}/>*/}
-         {/*    </Stack.Navigator>*/}
-         {/*</NavigationContainer>*/}
-            {!isAuth ? <Login/> : <Navigation/>}
-        </AuthContext.Provider>
+        // <AuthContext.Provider value={{isAuth, setIsAuth}}>
+        //  {/*<NavigationContainer>*/}
+        //  {/*    <Stack.Navigator screenOptions={{headerShown:false}}>*/}
+        //  {/*        <Stack.Screen name={"Root"} component={Root} options={{headerShown:false}} />*/}
+        //  {/*       <Stack.Screen name={"Добавить контрагентов"} component={AddPartnersScreen}/>*/}
+        //  {/*        <Stack.Screen name={"Добавить ценовое правило"} component={AddPriceRules}/>*/}
+        //  {/*    </Stack.Navigator>*/}
+        //  {/*</NavigationContainer>*/}
+        //     {!isAuth ? <Login/> : <Navigation/>}
+        // </AuthContext.Provider>
+        <Navigation/>
     );
 }

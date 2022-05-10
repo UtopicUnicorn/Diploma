@@ -12,6 +12,7 @@ import React from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAuth} from "../components/useAuth";
 import {LinearGradient} from "expo-linear-gradient";
+import {loginEnum} from "../components/constants";
 
 
 export default function Login({navigation}: any) {
@@ -45,20 +46,20 @@ export default function Login({navigation}: any) {
                 style={styles.logo}
                 resizeMode={"center"}
                 source={{
-                    uri: "http://clone.6171.ru/img/site-logo.png",
+                    uri: loginEnum.logo,
                 }}
             />
             <View>
                 <TextInput
                     style={styles.input}
                     onChangeText={login}
-                    placeholder={'Login'}
+                    placeholder={loginEnum.login}
                     placeholderTextColor={'#808080'}
                 />
                 <TextInput
                     style={styles.input}
                     onChangeText={password}
-                    placeholder={'Password'}
+                    placeholder={loginEnum.password}
                     placeholderTextColor={'#808080'}
                 />
                 <View style={styles.saveButtonView}>
@@ -68,7 +69,7 @@ export default function Login({navigation}: any) {
                     locations={[0.2498,0.7503]}
                     colors={['#804EA7','#4FB0C0']}>
                 <Pressable style={styles.saveButton} onPress={authHandler}>
-                    <Text style={styles.text}>Войти в систему</Text>
+                    <Text style={styles.text}>{loginEnum.enter}</Text>
                 </Pressable>
                 </LinearGradient>
                 </View>

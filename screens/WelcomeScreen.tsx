@@ -1,22 +1,21 @@
 import {
-    Alert,
-    Image, SafeAreaView,
+    Image,
     StyleSheet,
     Text,
-    TouchableOpacity,
     View,
 } from "react-native";
-import { Ionicons, AntDesign, Feather, Entypo } from "@expo/vector-icons";
 import React from "react";
+import {refs} from "../components/refs";
+import {welcomeScreenEnums} from "../components/constants";
 
 export default function WelComeScreen() {
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Добро пожаловать в систему Clone Service!</Text>
+            <Text style={styles.text}>{welcomeScreenEnums.title}</Text>
             <Image
                 style={styles.logo}
                 source={{
-                    uri: "http://clone.6171.ru/img/site-logo.png",
+                    uri: refs.logo,
                 }}
             />
         </View>
@@ -26,7 +25,6 @@ const styles = StyleSheet.create({
     logo: {
         width: 194,
         height: 43,
-        // alignItems: "center",
     },
     text: {
         marginTop: 60,
@@ -37,7 +35,6 @@ const styles = StyleSheet.create({
     },
     container: {
         alignItems: "center",
-        // justifyContent: "center",
         backgroundColor: "#FFF",
         flex: 1,
     },
