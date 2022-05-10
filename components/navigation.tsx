@@ -13,20 +13,21 @@ import {NavigationContainer} from "@react-navigation/native";
 import AddPartnersScreen from "../screens/AddPartnersScreen";
 import AddPriceRules from "../screens/AddPriceRules";
 import ItemsScreen from "../screens/ItemsScreen";
+import {navigationEnums} from "./navigationEnums";
 
 
 export function Root() {
     return(
-        <Drawer.Navigator initialRouteName="Главный экран" screenOptions={{headerShown:true}}>
-            <Drawer.Screen name="Главная" component={WelComeScreen} />
+        <Drawer.Navigator initialRouteName={navigationEnums.mainScreen} screenOptions={{headerShown:true}}>
+            <Drawer.Screen name={navigationEnums.main} component={WelComeScreen} />
             {/*<Drawer.Screen name="LoginScreen" component={Login} />*/}
-            <Drawer.Screen name="Закупки" component={Purchases} />
-            <Drawer.Screen name="Просмотр номенклатуры" component={Nomenclature}/>
-            <Drawer.Screen name="Создание номенклатуры" component={AddNomenclature}/>
-            <Drawer.Screen name="Работа с товаром" component={ItemsScreen}/>
-            <Drawer.Screen name="Сделки с клиентами" component={Deals}/>
-            <Drawer.Screen name="Контрагенты" component={PartnersScreen} />
-            <Drawer.Screen name="Ценовые правила" component={PriceRules} />
+            <Drawer.Screen name={navigationEnums.purchases} component={Purchases} />
+            <Drawer.Screen name={navigationEnums.openNomenclature} component={Nomenclature}/>
+            <Drawer.Screen name={navigationEnums.addNomenclature} component={AddNomenclature}/>
+            <Drawer.Screen name={navigationEnums.itemWork} component={ItemsScreen}/>
+            <Drawer.Screen name={navigationEnums.deals} component={Deals}/>
+            <Drawer.Screen name={navigationEnums.partners} component={PartnersScreen} />
+            <Drawer.Screen name={navigationEnums.priceRule} component={PriceRules} />
         </Drawer.Navigator>
     )
 }
@@ -38,9 +39,9 @@ export default function Navigation(){
     return(
     <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown:false}}>
-            <Stack.Screen name={"Root"} component={Root} options={{headerShown:false}} />
-            <Stack.Screen name={"Добавить контрагентов"} component={AddPartnersScreen}/>
-            <Stack.Screen name={"Добавить ценовое правило"} component={AddPriceRules}/>
+            <Stack.Screen name={navigationEnums.root} component={Root} options={{headerShown:false}} />
+            <Stack.Screen name={navigationEnums.addPartner} component={AddPartnersScreen}/>
+            <Stack.Screen name={navigationEnums.addRule} component={AddPriceRules}/>
         </Stack.Navigator>
     </NavigationContainer>
     );
