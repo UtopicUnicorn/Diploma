@@ -1,39 +1,75 @@
 import React from "react";
-import {Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
+import {
+    Pressable,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableHighlight,
+    TouchableOpacity,
+    View
+} from "react-native";
+import NomenclatureRepository from "../Repositories/NomenclatureRepository";
+import TiresForm from "./Nomenclature/TiresForm";
+import WheelDiskForm from "./Nomenclature/WheelDiskForm";
+import CapsForm from "./Nomenclature/CapsForm";
+import SensorsForm from "./Nomenclature/SensorsForm";
+import TireChamberForm from "./Nomenclature/TireChamberForm";
 
 
 
 export default function AddNomenclature ({navigation}: any){
-    let [BrandValue, brand] = React.useState("");
-    let [ModelValue, model] = React.useState("");
-    let [ProfileValue, profile] = React.useState("");
-    let [DiameterValue, diameter] = React.useState("");
-    let [WidthValue, width] = React.useState("");
-    let [IndexValue, index] = React.useState("")
-    let [DescriptionValue, description] = React.useState("");
-    let [YearValue, year] = React.useState("");
+    // let [BrandValue, brand] = React.useState("");
+    // let [ModelValue, model] = React.useState("");
+    // let [ProfileValue, profile] = React.useState("");
+    // let [DiameterValue, diameter] = React.useState("");
+    // let [WidthValue, width] = React.useState("");
+    // let [IndexValue, index] = React.useState("")
+    // let [DescriptionValue, description] = React.useState("");
+    // let [YearValue, year] = React.useState("");
 
-    const years: number[] =[2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022];
+    let [item, setItem] = React.useState("tires");
+    let [status, setStatus] = React.useState("new");
 
-    const sendForm =()=> {
-        fetch('http://localhost:3000/nomenclature', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                brand: BrandValue,
-                model: ModelValue,
-                profile: ProfileValue,
-                diameter: DiameterValue,
-                width: WidthValue,
-                index: IndexValue,
-                description: DescriptionValue,
-                year: YearValue
-            })
-        });
+
+    // const sendForm = async ()=> {
+    //     let data = await NomenclatureRepository.post({
+    //                 brand: BrandValue,
+    //                 model: ModelValue,
+    //                 profile: ProfileValue,
+    //                 diameter: Number(DiameterValue),
+    //                 width: Number(WidthValue),
+    //                 index: IndexValue,
+    //                 description: DescriptionValue,
+    //                 year: Number(YearValue)
+    //     })
+    // }
+
+
+    const Choose =()=>{
+        switch (item){
+            case("tires"):{
+                return <TiresForm status={status}/>;
+            }
+            case("disks"):{
+                return <WheelDiskForm status={status}/>;
+            }
+            case ("caps"):{
+                return <CapsForm status={status}/>;
+            }
+            case ("sensors"):{
+                return <SensorsForm status={status}/>;
+            }
+            case ("chamber"):{
+                return <TireChamberForm status={status}/>;
+            }
+            default:{
+                return <TiresForm status={status}/>;
+            }
+        }
     }
+
 
     return(
         <SafeAreaView style={styles.container}>
@@ -44,97 +80,47 @@ export default function AddNomenclature ({navigation}: any){
                 </View>
                 {/* Buttons area*/}
                 <View>
-                    <Pressable style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={()=>{setItem('tires')}}>
                         <Text style={styles.text}>Шины</Text>
-                    </Pressable>
+                    </TouchableOpacity>
 
-                    <Pressable style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={()=>{setItem('disks')}} >
                         <Text style={styles.text}>Диски</Text>
-                    </Pressable>
+                    </TouchableOpacity>
 
-                    <Pressable style={styles.button}>
+                    <TouchableOpacity style={styles.button} >
                         <Text style={styles.text}>Услуги</Text>
-                    </Pressable>
+                    </TouchableOpacity>
 
-                    <Pressable style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={()=>{setItem('caps')}}>
                         <Text style={styles.text}>Колпаки</Text>
-                    </Pressable>
+                    </TouchableOpacity>
 
-                    <Pressable style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={()=>{setItem('chamber')}}>
                         <Text style={styles.text}>Камеры</Text>
-                    </Pressable>
+                    </TouchableOpacity>
 
-                    <Pressable style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={()=>{setItem('sensors')} }>
                         <Text style={styles.text}>Датчики</Text>
-                    </Pressable>
+                    </TouchableOpacity>
 
-                    <Pressable style={styles.button}>
+                    <TouchableOpacity style={styles.button}>
                         <Text style={styles.text}>Крепеж</Text>
-                    </Pressable>
+                    </TouchableOpacity>
                 </View>
 
                 {/*NEW/Old buttons*/}
                 <View style={styles.oldnew}>
-                    <Pressable style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={()=>{setStatus("new")}}>
                         <Text style={styles.text}>NEW</Text>
-                    </Pressable>
+                    </TouchableOpacity>
 
-                    <Pressable style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={()=>{setStatus("old")}}>
                         <Text style={styles.text}>Б/У</Text>
-                    </Pressable>
+                    </TouchableOpacity>
                 </View>
-                {/*Child Components with the rest layout*/}
-                {/*Temp tires form*/}
-                <View>
-                    <Text style={styles.name}>Бренд</Text>
-                    <TextInput
-                        onChangeText={brand}
-                        style={styles.form}
-                    />
-                    <Text style={styles.name}>Модель</Text>
-                    <TextInput
-                        onChangeText={model}
-                        style={styles.form}
-                    />
-                </View>
-
-                <View>
-                    <Text style={styles.name}>Ширина</Text>
-                    <TextInput
-                        onChangeText={width}
-                        style={styles.form}
-                    />
-                    <Text style={styles.name}>Профиль</Text>
-                    <TextInput
-                        onChangeText={profile}
-                        style={styles.form}
-                    />
-                    <Text style={styles.name}>Диаметр</Text>
-                    <TextInput
-                        onChangeText={diameter}
-                        style={styles.form}
-                    />
-                    <Text style={styles.name}>Индекс</Text>
-                    <TextInput
-                        onChangeText={index}
-                        style={styles.form}
-                    />
-                    <Text style={styles.name}>Год</Text>
-                    <TextInput
-                        onChangeText={year}
-                        style={styles.form}
-                    />
-                    <Text style={styles.name}>Описание</Text>
-                    <TextInput
-                        onChangeText={description}
-                        style={styles.formarea}
-                        multiline={true}
-                        numberOfLines={2}
-                    />
-                    <Pressable style={styles.button} onPress={sendForm}>
-                        <Text style={styles.text}>Добавить</Text>
-                    </Pressable>
-                </View>
+                {Choose()}
+                {/*<TiresForm/>*/}
             </ScrollView>
 
 
@@ -180,6 +166,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         elevation: 3,
         borderWidth: 1,
+        borderColor:'#804EA7',
         margin:"3%",
         marginTop:"2%",
     },
