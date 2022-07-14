@@ -2,5 +2,9 @@ export interface PurchasesInterface {
     organization: string;
     supplier: string;
     stock: string;
-    interval: string;
+    sum: number;
+    partner: string;
+    item: string;
+    document:string;
+    addinvest: number;
 }

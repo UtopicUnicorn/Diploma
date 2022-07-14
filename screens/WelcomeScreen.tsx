@@ -1,5 +1,5 @@
 import {
-    Image,
+    Image, Pressable,
     StyleSheet,
     Text,
     View,
@@ -8,7 +8,7 @@ import React from "react";
 import {refs} from "../components/refs";
 import {welcomeScreenEnums} from "../components/constants";
 
-export default function WelComeScreen() {
+export default function WelcomeScreen() {
     return (
         <View style={styles.container}>
             <Text style={styles.text}>{welcomeScreenEnums.title}</Text>

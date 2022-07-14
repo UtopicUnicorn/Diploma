@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useAuth} from "../components/useAuth";
 import {LinearGradient} from "expo-linear-gradient";
 import {loginEnum} from "../components/constants";
+import LoginService from "../services/LoginService";
 
 
 export default function Login({navigation}: any) {
@@ -21,19 +22,18 @@ export default function Login({navigation}: any) {
 
     const {isAuth, setIsAuth} = useAuth();
 
+    const setToken = (id: any)=>{
+        AsyncStorage.setItem('key', id['data']).then(()=> setIsAuth(true));
+    }
+
     const  authHandler = () =>{
         if(loginValue && passwordValue){
-            if(loginValue!='test'){
-                Alert.alert('Неверный ввод','Неправильный логин');
-                return
+            const body = {
+                login: loginValue,
+                password: passwordValue
             }
-            if(passwordValue!='test'){
-                Alert.alert('Неверный ввод','Неверный логин');
-                return;
-            }
+            LoginService.checkPass(body).then((id)=>setToken(id)).catch(e=>{console.log(e)});
 
-            AsyncStorage.setItem('token', 'w23eefq234Ad');
-            setIsAuth(true);
         }else{
             console.log('заполните все поля');
         }
@@ -61,6 +61,7 @@ export default function Login({navigation}: any) {
                     onChangeText={password}
                     placeholder={loginEnum.password}
                     placeholderTextColor={'#808080'}
+                    textContentType={"password"}
                 />
                 <View style={styles.saveButtonView}>
                 <LinearGradient

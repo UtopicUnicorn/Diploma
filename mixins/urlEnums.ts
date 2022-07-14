@@ -5,5 +5,5 @@ export enum urlEnums {
     deals = 'deals',
     items = 'items',
     purchases = 'purchases',
-
+    login = 'login',
 }

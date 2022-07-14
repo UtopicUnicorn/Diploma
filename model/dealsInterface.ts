@@ -1,5 +1,9 @@
 export interface DealsInterface{
-    organization?: string;
-    manager?: string;
-    interval?: string;
+    partner?: string;
+    item?: string;
+    number?: string;
+    price?: number;
+    state?: string;
+    amount?: number;
+    document?: string;
 }

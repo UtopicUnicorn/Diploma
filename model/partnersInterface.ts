@@ -5,6 +5,7 @@ export interface PartnersInterface {
     phone: string;
     mail: string;
     type: string;
+    organization: string;
     address?: string;
     inn?:string;
     bank?: string;
@@ -14,17 +15,3 @@ export interface PartnersInterface {
     kpp?: string;
 }
 
-
-// export interface ipPartner extends PartnersInterface{
-//     address: string;
-//     inn:string;
-//     bank: string;
-//     paynumber: string;
-//     bik: string;
-//     pricerule: string;
-//
-// }
-//
-// export  interface  lawPartner extends ipPartner{
-//     kpp: string;
-// }

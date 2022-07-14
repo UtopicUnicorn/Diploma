@@ -11,5 +11,10 @@ export enum navigationEnums {
     root = 'Root',
     addPartner = 'Добавить контрагентов',
     addRule = 'Добавить ценовое правило',
+    qrScanner = 'Сканер',
+    qrInfo = 'Информация',
+    addPurchases = 'Добавить закупку',
+    editPurchases = 'Редактиравать закупку',
+    addDeals = 'Добавить сделку'
 }
 

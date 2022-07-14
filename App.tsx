@@ -13,8 +13,9 @@ import Login from "./screens/LoginScreen";
 // import Deals from "./screens/Deals";
 // import Nomenclature from "./screens/NomenclatureScreen";
 // import AddNomenclature from "./screens/AddNomenclatureScreen";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Navigation from "./components/navigation";
+import {LogBox} from "react-native";
 // import {SafeAreaView, View} from "react-native";
 
 
@@ -47,7 +48,7 @@ export default function App() {
 
     const [isAuth, setIsAuth] = useState(false);
 
-
+    useEffect(()=>LogBox.ignoreAllLogs());
     return (
         // <AuthContext.Provider value={{isAuth, setIsAuth}}>
         //  {/*<NavigationContainer>*/}
@@ -59,6 +60,9 @@ export default function App() {
         //  {/*</NavigationContainer>*/}
         //     {!isAuth ? <Login/> : <Navigation/>}
         // </AuthContext.Provider>
-        <Navigation/>
+        <AuthContext.Provider value={{isAuth, setIsAuth}}>
+            {!isAuth ? <Login/> : <Navigation/>}
+        </AuthContext.Provider>
+
     );
 }
